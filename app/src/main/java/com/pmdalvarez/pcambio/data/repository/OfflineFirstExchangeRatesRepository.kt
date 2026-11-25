@@ -18,12 +18,14 @@ class OfflineFirstExchangeRatesRepository @Inject constructor(
   private val exchangeRatesPreferences: ExchangeRatesPreferences
 ): ExchangeRatesRepository {
 
-  val exchangeRates: Flow<List<ExchangeRate>> =
+  override val exchangeRates: Flow<List<ExchangeRate>> =
     currencyDao.getAllCurrencies().map { currencyEntities ->
       currencyEntities.map { currencyEntity ->
         currencyEntity.toExchangeRate()
       }
     }
+
+  override val exchangeRatesDate: Flow<String?> = exchangeRatesPreferences.exchangeRatesDate
 
   override suspend fun syncLatestExchangeRates(): Boolean =
     try {

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface ExchangeRatesRepository {
 
   val exchangeRates: Flow<List<ExchangeRate>>
+  val exchangeRatesDate: Flow<String?>
   suspend fun syncLatestExchangeRates(): Boolean
 
   companion object {
