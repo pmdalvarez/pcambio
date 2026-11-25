@@ -13,11 +13,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.pmdalvarez.pcambio.R
 import com.pmdalvarez.pcambio.ui.theme.PCambioPurpleDark
 
 @Composable
-fun CurrencyConverterScreen() {
+fun CurrencyConverterScreen(
+  viewModel: CurrencyConverterViewModel = hiltViewModel()
+) {
   Scaffold(
     modifier = Modifier
       .fillMaxSize()
