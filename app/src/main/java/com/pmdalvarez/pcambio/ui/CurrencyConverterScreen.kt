@@ -99,13 +99,13 @@ fun CurrencyConverterScreen(
       ) {
         if (uiState.exchangeRatesDateFormatted.isNotBlank()) {
           Text(
-            text = "Exchange Rates Date: ${uiState.exchangeRatesDateFormatted}",
+            text = stringResource(R.string.exchange_rates_date,uiState.exchangeRatesDateFormatted),
             style = MaterialTheme.typography.bodySmall,
             color = TextSecondary
           )
         }
         Text(
-          text = "Base Currency: ${uiState.baseCurrencyCode}",
+          text = stringResource(R.string.base_currency, uiState.baseCurrencyCode),
           style = MaterialTheme.typography.bodySmall,
           color = TextSecondary
         )
@@ -113,7 +113,7 @@ fun CurrencyConverterScreen(
 
       // Source currency
       CurrencySelector(
-        label = "Enter Source Currency",
+        label = stringResource(R.string.enter_source_currency),
         currencies = uiState.currencies,
         selectedCurrencyCode = baseCurrencyInput,
         onCurrencySelected = {
@@ -124,7 +124,7 @@ fun CurrencyConverterScreen(
 
       // Target currency
       CurrencySelector(
-        label = "Enter Target Currency",
+        label = stringResource(R.string.enter_target_currency),
         currencies = uiState.currencies,
         selectedCurrencyCode = targetCurrencyInput,
         onCurrencySelected = {
@@ -140,7 +140,7 @@ fun CurrencyConverterScreen(
           baseCurrencyAmountInput = it
         },
         label = {
-          Text("Source Currency Amount")
+          Text(stringResource(R.string.source_currency_amount))
         },
         keyboardOptions = KeyboardOptions(
           keyboardType = KeyboardType.Decimal
@@ -156,7 +156,7 @@ fun CurrencyConverterScreen(
           verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
           Text(
-            text = "Converted Amount",
+            text = stringResource(R.string.converted_amount),
             style = MaterialTheme.typography.titleMedium,
             color = TextSecondary
           )
@@ -164,7 +164,7 @@ fun CurrencyConverterScreen(
           Text(
             text = String.format(
               Locale.getDefault(),
-              "%,.2f %s",
+              "% %s",
               it,
               targetCurrencyInput.uppercase()
             ),

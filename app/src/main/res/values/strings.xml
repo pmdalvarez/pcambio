@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Pretix Currency Converter</string>
+    <string name="exchange_rates_date">Exchange Rates Date: %1$s</string>
+    <string name="base_currency">Base Currency: %1$s</string>
+    <string name="enter_source_currency">Enter Source Currency</string>
+    <string name="enter_target_currency">Enter Target Currency</string>
+    <string name="source_currency_amount">Source Currency Amount</string>
+    <string name="converted_amount">Converted Amount</string>
 </resources>
