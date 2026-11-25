@@ -2,9 +2,9 @@ package com.pmdalvarez.pcambio.domain.repository
 
 interface ExchangeRatesRepository {
 
-  suspend fun syncLatestExchageRates(): Boolean
+  suspend fun syncLatestExchangeRates(): Boolean
 
-  public companion object {
+  companion object {
     const val BASE_CURRENCY = "usd"
   }
 

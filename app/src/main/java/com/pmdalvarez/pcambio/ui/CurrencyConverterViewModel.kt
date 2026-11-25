@@ -19,7 +19,7 @@ class CurrencyConverterViewModel @Inject constructor(
 
   fun syncLatestExchangesRates() {
     viewModelScope.launch {
-      val result = exchangeRatesRepository.syncLatestExchageRates()
+      val result = exchangeRatesRepository.syncLatestExchangeRates()
       // TODO - If result is false then show snackbar
     }
   }

@@ -4,6 +4,7 @@ import com.pmdalvarez.pcambio.data.local.CurrencyDao
 import com.pmdalvarez.pcambio.data.local.CurrencyEntity
 import com.pmdalvarez.pcambio.data.local.ExchangeRatesPreferences
 import com.pmdalvarez.pcambio.data.remote.ExchangeRatesApi
+import com.pmdalvarez.pcambio.domain.repository.ExchangeRatesRepository
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -11,9 +12,9 @@ class OfflineFirstExchangeRatesRepository @Inject constructor(
   private val exchangeRatesApi: ExchangeRatesApi,
   private val currencyDao: CurrencyDao,
   private val exchangeRatesPreferences: ExchangeRatesPreferences
-) {
+): ExchangeRatesRepository {
 
-  suspend fun syncLatestExchangeRates(): Boolean =
+  override suspend fun syncLatestExchangeRates(): Boolean =
     try {
       // 1/3: Load latest currency names and exchange rates
       val currencyNames = exchangeRatesApi.getCurrencyNames()
