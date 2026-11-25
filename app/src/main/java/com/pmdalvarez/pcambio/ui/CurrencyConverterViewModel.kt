@@ -4,6 +4,7 @@ package com.pmdalvarez.pcambio.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pmdalvarez.pcambio.domain.repository.ExchangeRatesRepository
+import com.pmdalvarez.pcambio.domain.repository.ExchangeRatesRepository.Companion.BASE_CURRENCY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.util.Locale
 import javax.inject.Inject
 
@@ -22,7 +22,11 @@ class CurrencyConverterViewModel @Inject constructor(
   private val exchangeRatesRepository: ExchangeRatesRepository,
 ) : ViewModel() {
 
-  private val _uiState = MutableStateFlow(CurrencyConverterUiState())
+  private val _uiState = MutableStateFlow(
+    CurrencyConverterUiState(
+      baseCurrencyCode = BASE_CURRENCY.uppercase(Locale.ROOT)
+    )
+  )
   val uiState: StateFlow<CurrencyConverterUiState> = _uiState.asStateFlow()
 
   init {
@@ -31,21 +35,24 @@ class CurrencyConverterViewModel @Inject constructor(
         exchangeRatesRepository.exchangeRates,
         exchangeRatesRepository.exchangeRatesDate
       ) { exchangeRates, date ->
-        CurrencyConverterUiState(
-          currencies = exchangeRates.map {
-            CurrencyUiModel(
-              code = it.currencyCode,
-              name = it.currencyName,
-              rateFromBaseCurrency = it.rateFromBaseCurrency
-            )
-          },
-          exchangeRatesDateFormatted = date?.let(::formatDate).orEmpty()
-        )
-      }.collect { updatedState ->
-        _uiState.update { currentState ->
-          currentState.copy(
-            currencies = updatedState.currencies,
-            exchangeRatesDateFormatted = updatedState.exchangeRatesDateFormatted
+        val currencies = exchangeRates.map {
+          CurrencyUiModel(
+            code = it.currencyCode,
+            name = it.currencyName,
+            rateFromBaseCurrency = it.rateFromBaseCurrency
+          )
+        }
+
+        val formattedDate = date?.let {
+          runCatching { formatDate(it) }.getOrDefault("")
+        }.orEmpty()
+
+        currencies to formattedDate
+      }.collect { (currencies, formattedDate) ->
+        _uiState.update {
+          it.copy(
+            currencies = currencies,
+            exchangeRatesDateFormatted = formattedDate
           )
         }
       }
@@ -55,9 +62,9 @@ class CurrencyConverterViewModel @Inject constructor(
   }
 
   fun updateTargetCurrencyAmount(
-    baseCurrency: String,
-    targetCurrency: String,
-    baseCurrencyAmount: Double
+    baseCurrency: String?,
+    targetCurrency: String?,
+    baseCurrencyAmount: Double?
   ) {
     _uiState.update { currentState ->
       val baseRate = currentState.currencies.find {
@@ -69,10 +76,15 @@ class CurrencyConverterViewModel @Inject constructor(
       }?.rateFromBaseCurrency
 
       val targetAmount =
-        if (baseRate != null && baseRate > 0.0 && targetRate != null) {
-          baseCurrencyAmount / baseRate * targetRate
+        if (baseCurrency.isNullOrBlank() ||
+          targetCurrency.isNullOrBlank() ||
+          baseCurrencyAmount == null ||
+          baseRate == null || baseRate <= 0.0 ||
+          targetRate == null
+        ) {
+          null
         } else {
-          0.0
+          baseCurrencyAmount / baseRate * targetRate
         }
 
       currentState.copy(targetCurrencyAmount = targetAmount)
@@ -87,11 +99,7 @@ class CurrencyConverterViewModel @Inject constructor(
   }
 
   private fun formatDate(date: String): String =
-    try {
-      LocalDate.parse(date).format(
-        DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH)
-      )
-    } catch (_: DateTimeParseException) {
-      ""
-    }
+    LocalDate.parse(date).format(
+      DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.getDefault())
+    )
 }
