@@ -3,8 +3,12 @@ package com.pmdalvarez.pcambio.data.repository
 import com.pmdalvarez.pcambio.data.local.CurrencyDao
 import com.pmdalvarez.pcambio.data.local.CurrencyEntity
 import com.pmdalvarez.pcambio.data.local.ExchangeRatesPreferences
+import com.pmdalvarez.pcambio.data.local.toExchangeRate
 import com.pmdalvarez.pcambio.data.remote.ExchangeRatesApi
+import com.pmdalvarez.pcambio.domain.model.ExchangeRate
 import com.pmdalvarez.pcambio.domain.repository.ExchangeRatesRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -13,6 +17,13 @@ class OfflineFirstExchangeRatesRepository @Inject constructor(
   private val currencyDao: CurrencyDao,
   private val exchangeRatesPreferences: ExchangeRatesPreferences
 ): ExchangeRatesRepository {
+
+  val exchangeRates: Flow<List<ExchangeRate>> =
+    currencyDao.getAllCurrencies().map { currencyEntities ->
+      currencyEntities.map { currencyEntity ->
+        currencyEntity.toExchangeRate()
+      }
+    }
 
   override suspend fun syncLatestExchangeRates(): Boolean =
     try {
