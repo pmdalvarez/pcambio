@@ -164,7 +164,7 @@ fun CurrencyConverterScreen(
           Text(
             text = String.format(
               Locale.getDefault(),
-              "% %s",
+              "%f %s",
               it,
               targetCurrencyInput.uppercase()
             ),
