@@ -1,5 +1,6 @@
 package com.pmdalvarez.pcambio.data.repository
 
+import com.pmdalvarez.pcambio.data.local.CurrencyDao
 import com.pmdalvarez.pcambio.data.local.CurrencyEntity
 import com.pmdalvarez.pcambio.data.remote.ExchangeRatesApi
 import javax.inject.Inject
@@ -7,6 +8,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class OfflineFirstExchangeRatesRepository @Inject constructor(
   private val exchangeRatesApi: ExchangeRatesApi,
+  private val currencyDao: CurrencyDao
 ) {
 
   suspend fun syncLatestExchangeRates(): Boolean =
@@ -29,10 +31,10 @@ class OfflineFirstExchangeRatesRepository @Inject constructor(
           )
         }
       }
-
-      // TODO: insert list to room
+      currencyDao.insertOrReplaceCurrencies(currencyEntityList)
 
       // 3/3: Store date of exchange rates in datastore
+
 
       true
     } catch (exception: CancellationException) {
